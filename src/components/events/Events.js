@@ -1,25 +1,34 @@
 import React, { Component } from "react";
 import Event from "./Event";
-import { Consumer } from "../../context";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { getEvents } from "../../actions/eventActions";
+
 class Events extends Component {
+  componentDidMount() {
+    this.props.getEvents();
+  }
   render() {
+    const { events } = this.props;
     return (
-      <Consumer>
-        {(value) => {
-          const { events } = value;
-          return (
-            <React.Fragment>
-              <h1 className="display-4 mb-2">
-                <span style={{ color: "blue" }}>Events</span> List
-              </h1>
-              {events.map((event) => (
-                <Event key={event.id} event={event} />
-              ))}
-            </React.Fragment>
-          );
-        }}
-      </Consumer>
+      <React.Fragment>
+        <h1 className="display-4 mb-2">
+          <span style={{ color: "blue" }}>Events</span> List
+        </h1>
+        {events.map((event) => (
+          <Event key={event.id} event={event} />
+        ))}
+      </React.Fragment>
     );
   }
 }
-export default Events;
+Events.propTypes = {
+  events: PropTypes.array.isRequired,
+  getEvents: PropTypes.func.isRequired,
+};
+
+const mapStateToProps = (state) => ({
+  events: state.event.events,
+});
+
+export default connect(mapStateToProps, { getEvents })(Events);

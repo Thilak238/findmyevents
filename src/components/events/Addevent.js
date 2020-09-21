@@ -1,49 +1,39 @@
 import React, { Component } from "react";
-import { Consumer } from "../../context";
-
 import TextInputGroup from "../layout/TextInputGroup";
-import axios from "axios";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { addEvents } from "../../actions/eventActions";
 
 class Addevent extends Component {
   state = {
     name: "",
-    region: "",
-    field: "",
+    website: "",
     errors: {},
   };
 
-  onSubmit = async (dispatch, e) => {
+  onSubmit = (e) => {
     e.preventDefault();
-    const { name, region, field } = this.state;
+
+    const { name, website } = this.state;
     if (name === "") {
       this.setState({ errors: { name: "Name is Required" } });
       return;
     }
-    if (region === "") {
-      this.setState({ errors: { region: "Region is Required" } });
-      return;
-    }
-    if (field === "") {
-      this.setState({ errors: { field: "Field is Required" } });
+    if (website === "") {
+      this.setState({ errors: { website: "Website is Required" } });
       return;
     }
 
     const newEvent = {
       name,
-      region,
-      field,
+      website,
     };
-    const res = await axios.post(
-      "https://jsonplaceholder.typicode.com/users",
-      newEvent
-    );
-    dispatch({ type: "ADD_CONTACT", payload: res.data });
-
+    this.props.addEvents(newEvent);
     //clear state
     this.setState({
       name: "",
-      region: "",
-      field: "",
+      website: "",
+
       errors: {},
     });
     this.props.history.push("/");
@@ -55,53 +45,40 @@ class Addevent extends Component {
     });
 
   render() {
-    const { name, region, field, errors } = this.state;
+    const { name, website, errors } = this.state;
     return (
-      <Consumer>
-        {(value) => {
-          const { dispatch } = value;
-          return (
-            <div className="card mb-3">
-              <div className="card-header">AddEvent</div>
-              <div className="card-body">
-                <form onSubmit={this.onSubmit.bind(this, dispatch)}>
-                  <TextInputGroup
-                    label="Name"
-                    name="name"
-                    placeholder="Enter Name"
-                    value={name}
-                    onChange={this.onChange}
-                    error={errors.name}
-                  />
-                  <TextInputGroup
-                    label="Region"
-                    name="region"
-                    placeholder="Enter Region"
-                    value={region}
-                    onChange={this.onChange}
-                    error={errors.region}
-                  />
-                  <TextInputGroup
-                    label="Field"
-                    name="field"
-                    placeholder="Enter Field"
-                    value={field}
-                    onChange={this.onChange}
-                    error={errors.field}
-                  />
-                  <input
-                    type="submit"
-                    value="Add Event"
-                    className="btn btn-light btn-block"
-                  />
-                </form>
-              </div>
-            </div>
-          );
-        }}
-      </Consumer>
+      <div className="card mb-3">
+        <div className="card-header">AddEvent</div>
+        <div className="card-body">
+          <form onSubmit={this.onSubmit}>
+            <TextInputGroup
+              label="Name"
+              name="name"
+              placeholder="Enter Name"
+              value={name}
+              onChange={this.onChange}
+              error={errors.name}
+            />
+            <TextInputGroup
+              label="Website"
+              name="website"
+              placeholder="Enter Website"
+              value={website}
+              onChange={this.onChange}
+              error={errors.website}
+            />
+            <input
+              type="submit"
+              value="Add Event"
+              className="btn btn-light btn-block"
+            />
+          </form>
+        </div>
+      </div>
     );
   }
 }
-
-export default Addevent;
+Addevent.propTypes = {
+  addEvents: PropTypes.func.isRequired,
+};
+export default connect(null, { addEvents })(Addevent);

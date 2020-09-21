@@ -26,7 +26,6 @@ const Header = (props) => {
                 to="/"
                 className="nav-link"
                 style={{ color: "aqua", fontSize: "25px" }}
-                href="/#"
               >
                 <i className="fas fa-eye"></i> View
               </Link>
